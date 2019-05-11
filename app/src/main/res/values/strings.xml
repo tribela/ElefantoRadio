@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">Elefanto Radio</string>
+    <string name="switch_off">Service Off</string>
+    <string name="switch_on">Service On</string>
+    <string name="noti_action_stop">Stop</string>
+    <string name="noti_title">Elefanto Radio</string>
+    <string name="noti_content">Radio is streaming</string>
+    <string name="service_channel_name">Elefanto Service Channel</string>
 </resources>
