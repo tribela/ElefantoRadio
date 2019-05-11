@@ -15,6 +15,7 @@ import jarm.mastodon.radio.services.RadioService
 class MainActivity : AppCompatActivity(), CompoundButton.OnCheckedChangeListener {
 
     private lateinit var serviceButton: ToggleButton
+    private lateinit var serviceReceiver: ServiceReceiver
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -22,12 +23,17 @@ class MainActivity : AppCompatActivity(), CompoundButton.OnCheckedChangeListener
         serviceButton = findViewById(R.id.switch_start_service)
         serviceButton.setOnCheckedChangeListener(this)
 
-        val serviceReceiver = ServiceReceiver()
+        serviceReceiver = ServiceReceiver()
         val filter = IntentFilter()
         filter.addAction(Constants.BROADCAST_ACTION_SERVICE_RUNNING)
         registerReceiver(serviceReceiver, filter)
 
         updateServiceButton()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        unregisterReceiver(serviceReceiver)
     }
 
     private fun updateServiceButton() {
