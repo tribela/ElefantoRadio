@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.os.Build
 import android.os.Bundle
 import android.widget.CompoundButton
 import android.widget.ToggleButton
@@ -45,7 +46,11 @@ class MainActivity : AppCompatActivity(), CompoundButton.OnCheckedChangeListener
             serviceButton.id -> {
                 val serviceIntent = Intent(applicationContext, RadioService::class.java)
                 if (isChecked) {
-                    startForegroundService(serviceIntent)
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        startForegroundService(serviceIntent)
+                    } else {
+                        startService(serviceIntent)
+                    }
                 } else {
                     stopService(serviceIntent)
                 }
@@ -58,7 +63,7 @@ class MainActivity : AppCompatActivity(), CompoundButton.OnCheckedChangeListener
             val action = intent?.action
             when (action) {
                 Constants.BROADCAST_ACTION_SERVICE_RUNNING -> {
-                    serviceButton.isChecked = intent.getBooleanExtra(Constants.EXTRA_SERVICE_RUNNING, false)!!
+                    serviceButton.isChecked = intent.getBooleanExtra(Constants.EXTRA_SERVICE_RUNNING, false)
                 }
             }
         }

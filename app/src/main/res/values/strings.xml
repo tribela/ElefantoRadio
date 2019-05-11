@@ -5,5 +5,5 @@
     <string name="noti_action_stop">Stop</string>
     <string name="noti_title">Elefanto Radio</string>
     <string name="noti_content">Radio is streaming</string>
-    <string name="service_channel_name">Elefanto Service Channel</string>
+    <string name="service_channel_name">Elefanto Radio running</string>
 </resources>

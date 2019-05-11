@@ -3,9 +3,10 @@ package jarm.mastodon.radio.services
 import android.app.*
 import android.content.Context
 import android.content.Intent
-import android.graphics.drawable.Icon
+import android.os.Build
 import android.os.IBinder
 import android.util.Log
+import androidx.core.app.NotificationCompat
 import jarm.mastodon.radio.Constants
 import jarm.mastodon.radio.R
 import jarm.mastodon.radio.activities.MainActivity
@@ -68,25 +69,24 @@ class RadioService : Service() {
         val pMainIntent = PendingIntent.getService(this, 0, mainIntent, PendingIntent.FLAG_UPDATE_CURRENT)
         val pStopIntent = PendingIntent.getService(this, 0, stopIntent, PendingIntent.FLAG_UPDATE_CURRENT)
 
-        val notiChannel = NotificationChannel(
-            CHANNEL_ID,
-            getString(R.string.service_channel_name),
-            NotificationManager.IMPORTANCE_DEFAULT
-        )
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val notiChannel = NotificationChannel(
+                CHANNEL_ID,
+                getString(R.string.service_channel_name),
+                NotificationManager.IMPORTANCE_DEFAULT
+            )
+            (getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager).createNotificationChannel(notiChannel)
+        }
 
-        val stopAction = Notification.Action.Builder(
-            Icon.createWithResource(this, android.R.drawable.ic_menu_close_clear_cancel),
-            getString(R.string.noti_action_stop),
-            pStopIntent
-        ).build()
-
-        (getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager).createNotificationChannel(notiChannel)
-        val notification = Notification.Builder(this, CHANNEL_ID)
+        val notification = NotificationCompat.Builder(this, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_launcher_foreground)
             .setContentTitle(getString(R.string.noti_title))
             .setContentText(getString(R.string.noti_content))
             .setContentIntent(pMainIntent)
-            .addAction(stopAction)
+            .addAction(
+                android.R.drawable.ic_menu_close_clear_cancel,
+                getString(R.string.noti_action_stop),
+                pStopIntent)
             .setAutoCancel(true)
             .build()
 
