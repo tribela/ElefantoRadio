@@ -1,10 +1,14 @@
 package jarm.mastodon.radio.activities
 
+import android.content.BroadcastReceiver
+import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.os.Bundle
 import android.widget.CompoundButton
 import android.widget.ToggleButton
 import androidx.appcompat.app.AppCompatActivity
+import jarm.mastodon.radio.Constants
 import jarm.mastodon.radio.R
 import jarm.mastodon.radio.services.RadioService
 
@@ -17,6 +21,11 @@ class MainActivity : AppCompatActivity(), CompoundButton.OnCheckedChangeListener
         setContentView(R.layout.activity_main)
         serviceButton = findViewById(R.id.switch_start_service)
         serviceButton.setOnCheckedChangeListener(this)
+
+        val serviceReceiver = ServiceReceiver()
+        val filter = IntentFilter()
+        filter.addAction(Constants.BROADCAST_ACTION_SERVICE_RUNNING)
+        registerReceiver(serviceReceiver, filter)
 
         updateServiceButton()
     }
@@ -33,6 +42,17 @@ class MainActivity : AppCompatActivity(), CompoundButton.OnCheckedChangeListener
                     startForegroundService(serviceIntent)
                 } else {
                     stopService(serviceIntent)
+                }
+            }
+        }
+    }
+
+    inner class ServiceReceiver : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            val action = intent?.action
+            when (action) {
+                Constants.BROADCAST_ACTION_SERVICE_RUNNING -> {
+                    serviceButton.isChecked = intent.getBooleanExtra(Constants.EXTRA_SERVICE_RUNNING, false)!!
                 }
             }
         }

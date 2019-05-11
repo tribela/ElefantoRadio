@@ -6,6 +6,7 @@ import android.content.Intent
 import android.graphics.drawable.Icon
 import android.os.IBinder
 import android.util.Log
+import jarm.mastodon.radio.Constants
 import jarm.mastodon.radio.R
 import jarm.mastodon.radio.activities.MainActivity
 
@@ -27,13 +28,13 @@ class RadioService : Service() {
         super.onCreate()
         startForegroundService()
         Log.i("Elefanto", "Service Start")
-        runningState = true
+        setServiceState(true)
     }
 
     override fun onDestroy() {
         super.onDestroy()
         Log.i("Elefanto", "Service Stop")
-        runningState = false
+        setServiceState(false)
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -43,6 +44,14 @@ class RadioService : Service() {
             ACTION_STOP -> stopSelf()
         }
         return Service.START_STICKY
+    }
+
+    private fun setServiceState(running: Boolean) {
+        runningState = running
+        val intent = Intent()
+        intent.action = Constants.BROADCAST_ACTION_SERVICE_RUNNING
+        intent.putExtra(Constants.EXTRA_SERVICE_RUNNING, running)
+        sendBroadcast(intent)
     }
 
     private fun showMain() {
