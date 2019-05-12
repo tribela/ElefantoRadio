@@ -9,4 +9,5 @@
 
     <string name="default_token"/>
     <string name="default_domain"/>
+    <string name="menu_settings">Settings</string>
 </resources>

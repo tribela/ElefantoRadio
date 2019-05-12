@@ -6,6 +6,8 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.os.Build
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuItem
 import android.widget.CompoundButton
 import android.widget.EditText
 import android.widget.ToggleButton
@@ -38,12 +40,23 @@ class MainActivity : AppCompatActivity(), CompoundButton.OnCheckedChangeListener
         unregisterReceiver(serviceReceiver)
     }
 
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        val inflater = getMenuInflater()
+        inflater.inflate(R.menu.main_menu, menu)
+        return true
+    }
+
+    fun openSettings(item: MenuItem) {
+        val intent = Intent(this, AccountsActivity::class.java)
+        startActivity(intent)
+    }
+
     private fun updateServiceButton() {
         serviceButton.isChecked = RadioService.runningState
     }
 
     override fun onCheckedChanged(buttonView: CompoundButton?, isChecked: Boolean) {
-        when(buttonView?.id) {
+        when (buttonView?.id) {
             serviceButton.id -> {
                 val serviceIntent = Intent(applicationContext, RadioService::class.java)
                 if (isChecked) {

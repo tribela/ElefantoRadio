@@ -31,6 +31,8 @@ android {
     }
 }
 
+apply plugin: 'kotlin-kapt'
+
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation"org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
@@ -44,4 +46,7 @@ dependencies {
 
     implementation 'com.squareup.okhttp3:okhttp:3.14.1'
     implementation 'org.jsoup:jsoup:1.11.3'
+
+    implementation "android.arch.persistence.room:runtime:1.1.1"
+    kapt "android.arch.persistence.room:compiler:1.1.1"
 }
