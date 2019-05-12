@@ -1,15 +1,20 @@
 package jarm.mastodon.radio.services
 
-import android.app.*
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
+import android.app.Service
 import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.IBinder
+import android.speech.tts.TextToSpeech
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import jarm.mastodon.radio.Constants
 import jarm.mastodon.radio.R
 import jarm.mastodon.radio.activities.MainActivity
+import java.util.*
 
 class RadioService : Service() {
 
@@ -20,6 +25,9 @@ class RadioService : Service() {
         var runningState: Boolean = false
             private set
     }
+
+    private var worker: RadioWorker? = null
+    private var tts: TextToSpeech? = null
 
     override fun onBind(intent: Intent?): IBinder? {
         return null
@@ -35,6 +43,9 @@ class RadioService : Service() {
     override fun onDestroy() {
         super.onDestroy()
         Log.i("Elefanto", "Service Stop")
+        worker?.stop()
+        tts?.stop()
+        tts?.shutdown()
         setServiceState(false)
     }
 
