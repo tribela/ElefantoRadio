@@ -32,6 +32,7 @@ class RadioWorker(domain: String, accessToken: String, private var tts: TextToSp
     fun fromHtml(html: String): String {
         val dom = Jsoup.parse(html)
         dom.getElementsByClass("invisible").remove()
+        dom.select("br").after("\n")
         return dom.wholeText()
     }
 
@@ -53,30 +54,43 @@ class RadioWorker(domain: String, accessToken: String, private var tts: TextToSp
             val event = response.getString("event")
 
             when (event) {
-                "update" -> {
-                    val payload = JSONObject(response.getString("payload"))
-                    val content = fromHtml(payload.getString("content"))
-                    val lang = payload.getString("language")
-                    val uri = payload.getString("uri")
-                    Log.i("Elefanto", "$lang $content")
+                "update" -> handleUpdate(response)
+            }
+        }
 
-                    try {
-                        val locale = Locale(lang)
-                        if (tts.isLanguageAvailable(locale) == TextToSpeech.LANG_AVAILABLE) {
-                            tts.language = locale
-                        } else {
-                            tts.language = tts.defaultVoice.locale
-                        }
-                    } catch (e: MissingResourceException) {
+        private fun handleUpdate(response: JSONObject) {
+            val payload = JSONObject(response.getString("payload"))
+            val content = payload.getString("content")
+            val text = fromHtml(content)
+            val lang = if (payload.isNull("language")) {
+                payload.getString("language")
+            } else {
+                null
+            }
+            val uri = payload.getString("uri")
+            Log.d("Elefanto", content)
+            Log.i("Elefanto", "$lang $text")
+
+            tts.language = tts.defaultVoice.locale
+            if (lang != null) {
+                try {
+                    val locale = Locale(lang)
+                    if (tts.isLanguageAvailable(locale) == TextToSpeech.LANG_AVAILABLE) {
+                        tts.language = locale
+                    } else {
                         tts.language = tts.defaultVoice.locale
                     }
-                    tts.speak(
-                        content,
-                        TextToSpeech.QUEUE_ADD,
-                        null,
-                        uri)
+                } catch (e: MissingResourceException) {
+                    tts.language = tts.defaultVoice.locale
                 }
             }
+
+            tts.speak(
+                text,
+                TextToSpeech.QUEUE_ADD,
+                null,
+                uri
+            )
         }
 
         override fun onClosed(webSocket: WebSocket, code: Int, reason: String) {
