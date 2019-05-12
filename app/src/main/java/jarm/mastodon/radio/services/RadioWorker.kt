@@ -99,15 +99,9 @@ class RadioWorker(
 
             tts.language = tts.defaultVoice.locale
             if (lang != null) {
-                try {
-                    val locale = Locale(lang)
-                    if (tts.isLanguageAvailable(locale) == TextToSpeech.LANG_AVAILABLE) {
-                        tts.language = locale
-                    } else {
-                        tts.language = tts.defaultVoice.locale
-                    }
-                } catch (e: MissingResourceException) {
-                    tts.language = tts.defaultVoice.locale
+                val locale = Locale(lang)
+                if (tts.isLanguageAvailable(locale) == TextToSpeech.LANG_AVAILABLE) {
+                    tts.language = locale
                 }
             }
 
