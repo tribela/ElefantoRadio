@@ -14,7 +14,6 @@ import androidx.core.app.NotificationCompat
 import jarm.mastodon.radio.Constants
 import jarm.mastodon.radio.R
 import jarm.mastodon.radio.activities.MainActivity
-import java.util.*
 
 class RadioService : Service() {
 
@@ -54,8 +53,16 @@ class RadioService : Service() {
         when(action) {
             ACTION_SHOW -> showMain()
             ACTION_STOP -> stopSelf()
+            null -> {
+                val domain = intent?.getStringExtra(Constants.EXTRA_DOMAIN)!!
+                val token = intent?.getStringExtra(Constants.EXTRA_TOKEN)!!
+                tts = TextToSpeech(this, TextToSpeech.OnInitListener {
+                    worker = RadioWorker(domain, token, tts!!)
+                    worker!!.run()
+                })
+            }
         }
-        return Service.START_STICKY
+        return Service.START_NOT_STICKY
     }
 
     private fun setServiceState(running: Boolean) {

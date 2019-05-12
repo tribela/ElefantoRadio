@@ -7,6 +7,7 @@ import android.content.IntentFilter
 import android.os.Build
 import android.os.Bundle
 import android.widget.CompoundButton
+import android.widget.EditText
 import android.widget.ToggleButton
 import androidx.appcompat.app.AppCompatActivity
 import jarm.mastodon.radio.Constants
@@ -46,6 +47,10 @@ class MainActivity : AppCompatActivity(), CompoundButton.OnCheckedChangeListener
             serviceButton.id -> {
                 val serviceIntent = Intent(applicationContext, RadioService::class.java)
                 if (isChecked) {
+                    val domain = findViewById<EditText>(R.id.text_domain)?.text.toString()
+                    val token = findViewById<EditText>(R.id.text_token)?.text.toString()
+                    serviceIntent.putExtra(Constants.EXTRA_DOMAIN, domain)
+                    serviceIntent.putExtra(Constants.EXTRA_TOKEN, token)
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                         startForegroundService(serviceIntent)
                     } else {

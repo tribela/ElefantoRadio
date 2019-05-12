@@ -6,16 +6,37 @@
         android:layout_height="match_parent"
         tools:context=".activities.MainActivity">
 
-    <RelativeLayout android:layout_width="match_parent" android:layout_height="match_parent">
-        <ToggleButton
-                android:id="@+id/switch_start_service"
-                android:layout_width="wrap_content"
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+        <androidx.appcompat.widget.AppCompatEditText
+                android:id="@+id/text_domain"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
-                android:textOff="@string/switch_off"
-                android:textOn="@string/switch_on"
-        />
-    </RelativeLayout>
+                android:hint="Domain"
+                android:text="@string/default_domain"/>
+        <androidx.appcompat.widget.AppCompatEditText
+                android:id="@+id/text_token"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textPassword"
+                android:hint="Access Token"
+                android:text="@string/default_token"/>
+        <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1">
+            <ToggleButton
+                    android:id="@+id/switch_start_service"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:textOff="@string/switch_off"
+                    android:textOn="@string/switch_on"
+            />
+        </RelativeLayout>
+    </LinearLayout>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

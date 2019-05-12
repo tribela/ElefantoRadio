@@ -6,4 +6,7 @@
     <string name="noti_title">Elefanto Radio</string>
     <string name="noti_content">Radio is streaming</string>
     <string name="service_channel_name">Elefanto Radio running</string>
+
+    <string name="default_token"/>
+    <string name="default_domain"/>
 </resources>
