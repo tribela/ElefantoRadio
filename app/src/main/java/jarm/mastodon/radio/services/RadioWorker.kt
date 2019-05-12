@@ -2,6 +2,7 @@ package jarm.mastodon.radio.services
 
 import android.speech.tts.TextToSpeech
 import android.util.Log
+import jarm.mastodon.radio.tasks.StreamingEndpointRetrievingTask
 import okhttp3.*
 import org.json.JSONObject
 import org.jsoup.Jsoup
@@ -12,11 +13,17 @@ class RadioWorker(domain: String, accessToken: String, private var tts: TextToSp
     // TODO("Make it list")
     private var websocket: WebSocket? = null
     private val client: OkHttpClient = OkHttpClient()
-    // TODO("Read instance API and use stream url")
-    private val request: Request = Request.Builder()
-        .url("wss://$domain/api/v1/streaming/?stream=public")
-        .addHeader("Authorization", "Bearer $accessToken")
-        .build()
+    private val request: Request
+
+    init {
+        val streamingUrl = StreamingEndpointRetrievingTask().execute(domain).get()
+        Log.i("Elefanto", "Use streaming url: $streamingUrl")
+
+        request = Request.Builder()
+            .url("$streamingUrl?stream=public")
+            .addHeader("Authorization", "Bearer $accessToken")
+            .build()
+    }
 
     fun run() {
         websocket = client.newWebSocket(request, StreamListener())
