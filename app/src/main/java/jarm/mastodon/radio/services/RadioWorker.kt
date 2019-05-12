@@ -1,9 +1,6 @@
 package jarm.mastodon.radio.services
 
-import android.os.Build
 import android.speech.tts.TextToSpeech
-import android.text.Html
-import android.text.Spanned
 import android.util.Log
 import okhttp3.*
 import org.json.JSONObject
@@ -62,7 +59,7 @@ class RadioWorker(domain: String, accessToken: String, private var tts: TextToSp
             val payload = JSONObject(response.getString("payload"))
             val content = payload.getString("content")
             val text = fromHtml(content)
-            val lang = if (payload.isNull("language")) {
+            val lang = if (!payload.isNull("language")) {
                 payload.getString("language")
             } else {
                 null
