@@ -1,9 +1,13 @@
 package jarm.mastodon.radio.services
 
+import android.os.Build
 import android.speech.tts.TextToSpeech
+import android.text.Html
+import android.text.Spanned
 import android.util.Log
 import okhttp3.*
 import org.json.JSONObject
+import org.jsoup.Jsoup
 import java.util.*
 
 class RadioWorker(domain: String, accessToken: String, private var tts: TextToSpeech) {
@@ -23,6 +27,12 @@ class RadioWorker(domain: String, accessToken: String, private var tts: TextToSp
 
     fun stop() {
         websocket?.close(1000, null)
+    }
+
+    fun fromHtml(html: String): String {
+        val dom = Jsoup.parse(html)
+        dom.getElementsByClass("invisible").remove()
+        return dom.wholeText()
     }
 
     inner class StreamListener : WebSocketListener() {
@@ -45,7 +55,7 @@ class RadioWorker(domain: String, accessToken: String, private var tts: TextToSp
             when (event) {
                 "update" -> {
                     val payload = JSONObject(response.getString("payload"))
-                    val content = payload.getString("content")
+                    val content = fromHtml(payload.getString("content"))
                     val lang = payload.getString("language")
                     val uri = payload.getString("uri")
                     Log.i("Elefanto", "$lang $content")
