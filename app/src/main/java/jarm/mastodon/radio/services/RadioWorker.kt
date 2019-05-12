@@ -5,7 +5,6 @@ import android.os.Looper
 import android.speech.tts.TextToSpeech
 import android.util.Log
 import android.widget.Toast
-import jarm.mastodon.radio.tasks.StreamingEndpointRetrievingTask
 import okhttp3.*
 import org.json.JSONObject
 import org.jsoup.Jsoup
@@ -20,22 +19,40 @@ class RadioWorker(
 
     // TODO("Make it list")
     private var websocket: WebSocket? = null
-    private val client: OkHttpClient = OkHttpClient()
-    private var request: Request? = null
     private val mainHandler = android.os.Handler(Looper.getMainLooper())
+    private var thread: Thread
+
+    private val job: Runnable = Runnable {
+        try {
+            val domain = domain
+
+            val client = OkHttpClient()
+            var request = Request.Builder()
+                .url("https://$domain/api/v1/instance")
+                .build()
+            val response = client.newCall(request).execute()
+            val apiResult = JSONObject(response.body()?.string())
+            val streamingUrl = apiResult.getJSONObject("urls").getString("streaming_api")
+
+            val streamingPath = "$streamingUrl/api/v1/streaming/"
+            request = Request.Builder()
+                .url("$streamingPath?stream=public")
+                .addHeader("Authorization", "Bearer $accessToken")
+                .build()
+            websocket = client.newWebSocket(request, StreamListener())
+        } catch (e: Exception) {
+            showToast(e.message!!)
+            websocket?.cancel()
+            mainHandler.postDelayed(reconnect, 3000)
+        }
+    }
 
     init {
-        val streamingUrl = StreamingEndpointRetrievingTask().execute(domain).get()
-        Log.i("Elefanto", "Use streaming url: $streamingUrl")
-
-        request = Request.Builder()
-            .url("$streamingUrl?stream=public")
-            .addHeader("Authorization", "Bearer $accessToken")
-            .build()
+        thread = Thread(job)
     }
 
     fun run() {
-        websocket = client.newWebSocket(request!!, StreamListener())
+        thread.start()
     }
 
     fun stop() {
@@ -44,7 +61,8 @@ class RadioWorker(
 
     private val reconnect = Runnable {
         websocket?.cancel()
-        run()
+        thread = Thread(job)
+        thread.start()
     }
 
     fun fromHtml(html: String): String {
