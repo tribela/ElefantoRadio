@@ -55,11 +55,10 @@ class RadioService : Service() {
             ACTION_STOP -> stopSelf()
             null -> {
                 val domain = intent?.getStringExtra(Constants.EXTRA_DOMAIN)!!
-                val token = intent?.getStringExtra(Constants.EXTRA_TOKEN)!!
-                tts = TextToSpeech(this, TextToSpeech.OnInitListener {
-                    worker = RadioWorker(domain, token, tts!!)
-                    worker!!.run()
-                })
+                val token = intent.getStringExtra(Constants.EXTRA_TOKEN)!!
+                tts = TextToSpeech(this, null)
+                worker = RadioWorker(this, domain, token, tts!!)
+                worker!!.run()
             }
         }
         return Service.START_NOT_STICKY
