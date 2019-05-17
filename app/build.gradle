@@ -42,6 +42,6 @@ dependencies {
     androidTestImplementation 'androidx.test:runner:1.2.0-beta01'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0-beta01'
 
-    implementation 'com.squareup.okhttp3:okhttp:3.14.1'
+    implementation 'com.github.sys1yagi.mastodon4j:mastodon4j:1.7.0'
     implementation 'org.jsoup:jsoup:1.11.3'
 }
